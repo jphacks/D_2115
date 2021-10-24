@@ -10,6 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Totte">
         <activity
+            android:name=".BeingShot"
+            android:exported="false" />
+        <activity
+            android:name=".Shooting"
+            android:exported="false" />
+        <activity
+            android:name=".ChooseRole"
+            android:exported="false" />
+        <activity
+            android:name=".Calling"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity2"
             android:exported="false" />
         <activity
