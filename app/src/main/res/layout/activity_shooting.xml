@@ -6,4 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".Shooting">
 
+    <ImageView
+        android:id="@+id/cameraImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
