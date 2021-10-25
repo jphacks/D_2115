@@ -1,5 +1,6 @@
 package com.totte
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -12,6 +13,15 @@ class MainActivity2 : AppCompatActivity() {
         val btnCancel : Button = findViewById(R.id.btnCancel)
 
         btnCancel.setOnClickListener {
+            finish()
+        }
+
+        // for debug
+        val btnConnected : Button = findViewById(R.id.btnConnected)
+
+        btnConnected.setOnClickListener {
+            val intent = Intent(this, ChooseRole::class.java)
+            startActivity(intent)
             finish()
         }
     }
