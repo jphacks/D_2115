@@ -34,5 +34,6 @@
         android:layout_height="wrap_content"
         android:text="つながったことにする"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="6dp" />
+        tools:layout_editor_absoluteY="6dp"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
