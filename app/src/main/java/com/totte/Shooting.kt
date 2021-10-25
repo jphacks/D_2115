@@ -60,7 +60,7 @@ class Shooting : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         // ここで撮影したデータを送信処理？
-        
+
         finish()
     }
 }

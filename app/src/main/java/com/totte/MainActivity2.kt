@@ -20,7 +20,7 @@ class MainActivity2 : AppCompatActivity() {
         val btnConnected : Button = findViewById(R.id.btnConnected)
 
         btnConnected.setOnClickListener {
-            val intent = Intent(this, ChooseRole::class.java)
+            val intent = Intent(this, Calling::class.java)
             startActivity(intent)
             finish()
         }
