@@ -1,15 +1,24 @@
 package com.totte
 
 import android.Manifest
+import android.R.attr
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import android.R.attr.data
+
+import android.R.attr.bitmap
+
+
+
 
 class Shooting : AppCompatActivity() {
+
     companion object {
         const val CAMERA_REQUEST_CODE = 1
         const val CAMERA_PERMISSION_REQUEST_CODE = 2
