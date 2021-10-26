@@ -24,9 +24,14 @@ class ChooseRole : AppCompatActivity() {
         val btnShooting : Button = findViewById(R.id.btnShooting)
         val btnBeingShot : Button = findViewById(R.id.btnBeingShot)
         val btnClose : Button = findViewById(R.id.btnClose)
+        val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
 
         btnShooting.setOnClickListener {
             goShooting()
+        }
+
+        btnSavePicture.setOnClickListener {
+            
         }
 
         btnBeingShot.setOnClickListener {
