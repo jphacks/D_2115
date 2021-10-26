@@ -1,9 +1,11 @@
 package com.totte
 
 import android.Manifest
+import android.R.attr
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +18,14 @@ import androidx.core.content.ContextCompat
 import java.io.File
 import java.io.IOException
 import java.util.*
+import android.R.attr.bitmap
+import java.nio.ByteBuffer
+import android.R.attr.bitmap
+import java.io.ByteArrayOutputStream
+import android.graphics.BitmapFactory
+
+
+
 
 
 class Shooting : AppCompatActivity() {
@@ -66,20 +76,19 @@ class Shooting : AppCompatActivity() {
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun savePicture(data: Intent?) {
-        val file = File.createTempFile("tmp", null, cacheDir)
-        
-
-    }
-
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // ここで撮影したデータを送信処理？
+        // 撮影したデータをbit配列に変換して送信？
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            this.savePicture(data = data)
+            data?.extras?.get("data").let { it ->
+                val baos: ByteArrayOutputStream = ByteArrayOutputStream()
+                (it as Bitmap).compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val jpgarr: ByteArray = baos.toByteArray()
+
+                intent.putExtra("KEY", jpgarr)
+                setResult(Activity.RESULT_OK, intent)
+            }
         }
 
         finish()

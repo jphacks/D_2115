@@ -4,6 +4,17 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
+import android.app.Activity
+import android.graphics.BitmapFactory
+
+import android.graphics.Bitmap
+
+
+
+
+
+
 
 class ChooseRole : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,8 +26,7 @@ class ChooseRole : AppCompatActivity() {
         val btnClose : Button = findViewById(R.id.btnClose)
 
         btnShooting.setOnClickListener {
-            val intent = Intent(this, Shooting::class.java)
-            startActivity(intent)
+            goShooting()
         }
 
         btnBeingShot.setOnClickListener {
@@ -29,6 +39,24 @@ class ChooseRole : AppCompatActivity() {
         }
     }
 
+    private fun goShooting() {
+        val intent = Intent(this, Shooting::class.java)
+        val requestCode = 1001
+        startActivityForResult(intent, requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                val tmp = intent?.getByteArrayExtra("KEY")
+
+                val bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp?.size!!)
+                cameraImage.setImageBitmap(bitmap)
+            }
+        }
+    }
 
 
 
