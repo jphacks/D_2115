@@ -79,7 +79,6 @@ class Shooting : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // 撮影したデータをbit配列に変換して送信？
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.extras?.get("data").let { it ->
                 val baos: ByteArrayOutputStream = ByteArrayOutputStream()

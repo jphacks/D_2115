@@ -26,7 +26,6 @@ class ChooseRole : AppCompatActivity() {
         setContentView(R.layout.activity_choose_role)
 
         val btnShooting : Button = findViewById(R.id.btnShooting)
-        val btnBeingShot : Button = findViewById(R.id.btnBeingShot)
         val btnClose : Button = findViewById(R.id.btnClose)
         val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
 
@@ -40,11 +39,6 @@ class ChooseRole : AppCompatActivity() {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
             val fileName = "totte$timeStamp.jpeg"
             saveToPublish(targetBitmap, fileName)
-        }
-
-        btnBeingShot.setOnClickListener {
-            val intent = Intent(this, BeingShot::class.java)
-            startActivity(intent)
         }
         
         btnClose.setOnClickListener {
