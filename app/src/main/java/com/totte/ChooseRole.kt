@@ -9,6 +9,10 @@ import android.app.Activity
 import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+
+
+
 
 
 
@@ -31,7 +35,9 @@ class ChooseRole : AppCompatActivity() {
         }
 
         btnSavePicture.setOnClickListener {
-            
+            val targetImage : ImageView = findViewById(R.id.cameraImage)
+            val targetBitmap : Bitmap = (targetImage.drawable as BitmapDrawable).bitmap
+            saveToPublish(targetBitmap, "sample.jpeg")
         }
 
         btnBeingShot.setOnClickListener {
