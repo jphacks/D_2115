@@ -1,5 +1,6 @@
 package com.totte
 
+
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -134,6 +135,15 @@ class MainActivity2 : AppCompatActivity() {
         val btnCancel : Button = findViewById(R.id.btnCancel)
 
         btnCancel.setOnClickListener {
+            finish()
+        }
+
+        // for debug
+        val btnConnected : Button = findViewById(R.id.btnConnected)
+
+        btnConnected.setOnClickListener {
+            val intent = Intent(this, Calling::class.java)
+            startActivity(intent)
             finish()
         }
     }
