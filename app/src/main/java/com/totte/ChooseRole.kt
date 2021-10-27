@@ -21,6 +21,24 @@ import java.util.*
 
 
 class ChooseRole : AppCompatActivity() {
+
+    /*
+    private val mPayloadCallback = object : PayloadCallback() {
+        override fun onPayloadReceived(endpointId: String, payload: Payload) {
+            when (payload.type) {
+                Payload.Type.BYTES -> {
+                    // バイト配列を受け取った時
+                    val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                    val tmp = payload.asBytes()!!
+                    val bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp?.size!!)
+                    cameraImage.setImageBitmap(bitmap)
+                }
+            }
+        }
+
+    }
+    */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_role)
@@ -57,10 +75,13 @@ class ChooseRole : AppCompatActivity() {
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
                 val cameraImage : ImageView = findViewById(R.id.cameraImage)
-                val tmp = intent?.getByteArrayExtra("KEY")
+                val sendImageByte = intent?.getByteArrayExtra("KEY")
 
-                val bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp?.size!!)
-                cameraImage.setImageBitmap(bitmap)
+                // println(sendImageByte?.size!!)
+                // バイト配列を送信する
+                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.frombytes(sendImageByte))
+
+
             }
         }
     }
@@ -88,5 +109,6 @@ class ChooseRole : AppCompatActivity() {
             }
         }
     }
+
 
 }
