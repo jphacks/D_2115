@@ -79,7 +79,7 @@ class ChooseRole : AppCompatActivity() {
 
                 // println(sendImageByte?.size!!)
                 // バイト配列を送信する
-                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.frombytes(sendImageByte))
+                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromBytes(sendImageByte))
 
 
             }
