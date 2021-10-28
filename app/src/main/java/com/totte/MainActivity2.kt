@@ -51,25 +51,7 @@ class MainActivity2 : AppCompatActivity() {
     private var newText : String? = null
     private var opponentName: String? = null
     private var opponentEndpointId: String? = null
-    private var myCodeName: String = CodenameGenerator.generate()
-    internal object CodenameGenerator {
-        private val COLORS = arrayOf(
-            "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet", "Purple", "Lavender"
-        )
-        private val TREATS = arrayOf(
-            "Cupcake", "Donut", "Eclair", "Froyo", "Gingerbread", "Honeycomb",
-            "Ice Cream Sandwich", "Jellybean", "Kit Kat", "Lollipop", "Marshmallow", "Nougat",
-            "Oreo", "Pie"
-        )
-        private val generator = Random()
-
-        /** Generate a random Android agent codename  */
-        fun generate(): String {
-            val color = COLORS[generator.nextInt(COLORS.size)]
-            val treat = TREATS[generator.nextInt(TREATS.size)]
-            return "$color $treat"
-        }
-    }
+    private lateinit var myName: String
 
     /**
      * This is for wiring and interacting with the UI views.
@@ -100,7 +82,7 @@ class MainActivity2 : AppCompatActivity() {
             // Accepting a connection means you want to receive messages. Hence, the API expects
             // that you attach a PayloadCall to the acceptance
             connectionsClient.acceptConnection(endpointId, payloadCallback)
-            opponentName = "Opponent\n(${info.endpointName})"
+            opponentName = "お相手の特徴：${info.endpointName}"
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -108,6 +90,7 @@ class MainActivity2 : AppCompatActivity() {
                 connectionsClient.stopAdvertising()
                 connectionsClient.stopDiscovery()
                 opponentEndpointId = endpointId
+                binding.opponentName.text = opponentName
                 Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
                 // call()
             }
@@ -120,7 +103,7 @@ class MainActivity2 : AppCompatActivity() {
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
         connectionsClient.startAdvertising(
-            myCodeName,
+            myName,
             packageName,
             connectionLifecycleCallback,
             options
@@ -129,7 +112,7 @@ class MainActivity2 : AppCompatActivity() {
     // Callbacks for finding other devices
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            connectionsClient.requestConnection(myCodeName, endpointId, connectionLifecycleCallback)
+            connectionsClient.requestConnection(myName, endpointId, connectionLifecycleCallback)
             println("Found!!")
             Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
             // call()
@@ -145,7 +128,7 @@ class MainActivity2 : AppCompatActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         connectionsClient = Nearby.getConnectionsClient(this)
-
+        myName = intent.getStringExtra("NAME").toString()
         startAdvertising()
         startDiscovery()
 
