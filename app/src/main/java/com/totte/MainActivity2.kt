@@ -2,19 +2,26 @@ package com.totte
 
 
 import android.Manifest
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.totte.databinding.ActivityMain2Binding
+import java.io.FileOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity2 : AppCompatActivity() {
@@ -93,7 +100,7 @@ class MainActivity2 : AppCompatActivity() {
                 connectionsClient.stopAdvertising()
                 connectionsClient.stopDiscovery()
                 opponentEndpointId = endpointId
-                call()
+                // call()
             }
         }
 
@@ -115,7 +122,7 @@ class MainActivity2 : AppCompatActivity() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             connectionsClient.requestConnection(myCodeName, endpointId, connectionLifecycleCallback)
             println("Found!!")
-            call()
+            // call()
         }
 
         override fun onEndpointLost(endpointId: String) {
@@ -132,20 +139,27 @@ class MainActivity2 : AppCompatActivity() {
         startAdvertising()
         startDiscovery()
 
-        val btnCancel : Button = findViewById(R.id.btnCancel)
+        val btnShooting : Button = findViewById(R.id.btnShooting)
+        val btnClose : Button = findViewById(R.id.btnClose)
+        val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
 
-        btnCancel.setOnClickListener {
+        btnShooting.setOnClickListener {
+            goShooting()
+        }
+
+        btnClose.setOnClickListener {
+            // onStop()
             finish()
         }
 
-        // for debug
-        val btnConnected : Button = findViewById(R.id.btnConnected)
-
-        btnConnected.setOnClickListener {
-            val intent = Intent(this, Calling::class.java)
-            startActivity(intent)
-            finish()
+        btnSavePicture.setOnClickListener {
+            val targetImage : ImageView = findViewById(R.id.cameraImage)
+            val targetBitmap : Bitmap = (targetImage.drawable as BitmapDrawable).bitmap
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
+            val fileName = "totte$timeStamp.jpeg"
+            saveToPublish(targetBitmap, fileName)
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -183,8 +197,55 @@ class MainActivity2 : AppCompatActivity() {
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startDiscovery(packageName,endpointDiscoveryCallback,options)
     }
+
     private fun call(){
         val intent = Intent(this, Calling::class.java)
         startActivity(intent)
+    }
+
+    private fun goShooting() {
+        val intent = Intent(this, Shooting::class.java)
+        val requestCode = 1001
+        startActivityForResult(intent, requestCode)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        if (requestCode == 1001) {
+            if (resultCode == RESULT_OK) {
+                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                val sendImageByte = intent?.getByteArrayExtra("KEY")
+
+                // println(sendImageByte?.size!!)
+                // バイト配列を送信する
+                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromBytes(sendImageByte))
+
+
+            }
+        }
+    }
+
+    private fun saveToPublish(photoBitmap: Bitmap, name: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            saveToPublishWithContentResolver(photoBitmap, name)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun saveToPublishWithContentResolver(photoBitmap: Bitmap, name: String) {
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, name)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
+        }
+
+        val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+        val contentResolver = contentResolver
+        val item = contentResolver.insert(collection, values)!!
+
+        contentResolver.openFileDescriptor(item, "w", null).use {
+            FileOutputStream(it!!.fileDescriptor).use { out ->
+                photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            }
+        }
     }
 }
