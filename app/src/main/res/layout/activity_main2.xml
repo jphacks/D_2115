@@ -10,9 +10,7 @@
     <ImageView
         android:id="@+id/cameraImage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="-38dp"
-        tools:layout_editor_absoluteY="0dp" />
+        android:layout_height="match_parent" />
 
     <Button
         android:id="@+id/btnShooting"
@@ -49,4 +47,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnClose"
         app:layout_constraintVertical_bias="0.932" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

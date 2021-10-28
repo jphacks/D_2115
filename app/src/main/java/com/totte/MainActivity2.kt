@@ -177,6 +177,7 @@ class MainActivity2 : AppCompatActivity() {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
             val fileName = "totte$timeStamp.jpeg"
             saveToPublish(targetBitmap, fileName)
+            Snackbar.make(findViewById(R.id.layoutMain2), "保存完了", Snackbar.LENGTH_SHORT).show()
         }
 
     }
@@ -215,11 +216,6 @@ class MainActivity2 : AppCompatActivity() {
     private fun startDiscovery(){
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startDiscovery(packageName,endpointDiscoveryCallback,options)
-    }
-
-    private fun call(){
-        val intent = Intent(this, Calling::class.java)
-        startActivity(intent)
     }
 
     private fun goShooting() {
