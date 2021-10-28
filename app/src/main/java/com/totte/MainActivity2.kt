@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
+import com.google.android.material.snackbar.Snackbar
 import com.totte.databinding.ActivityMain2Binding
 import java.io.FileOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
@@ -77,8 +79,14 @@ class MainActivity2 : AppCompatActivity() {
     /** callback for receiving payloads */
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            payload.asBytes()?.let {
-                newText = String(it, UTF_8)
+            when (payload.type) {
+                Payload.Type.BYTES -> {
+                    // バイト配列を受け取った時
+                    val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                    val tmp = payload.asBytes()!!
+                    val bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp?.size!!)
+                    cameraImage.setImageBitmap(bitmap)
+                }
             }
         }
 
@@ -100,6 +108,7 @@ class MainActivity2 : AppCompatActivity() {
                 connectionsClient.stopAdvertising()
                 connectionsClient.stopDiscovery()
                 opponentEndpointId = endpointId
+                Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
                 // call()
             }
         }
@@ -122,6 +131,7 @@ class MainActivity2 : AppCompatActivity() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             connectionsClient.requestConnection(myCodeName, endpointId, connectionLifecycleCallback)
             println("Found!!")
+            Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
             // call()
         }
 
@@ -144,11 +154,20 @@ class MainActivity2 : AppCompatActivity() {
         val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
 
         btnShooting.setOnClickListener {
-            goShooting()
+            if (opponentEndpointId != null) {
+                goShooting()
+            } else {
+                Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
+            }
+
         }
 
         btnClose.setOnClickListener {
-            // onStop()
+            connectionsClient.apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
             finish()
         }
 
@@ -213,12 +232,11 @@ class MainActivity2 : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, intent)
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
-                val cameraImage : ImageView = findViewById(R.id.cameraImage)
-                val sendImageByte = intent?.getByteArrayExtra("KEY")
+                val sendImageByte = intent!!.getByteArrayExtra("KEY")
 
                 // println(sendImageByte?.size!!)
                 // バイト配列を送信する
-                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromBytes(sendImageByte))
+                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromBytes(sendImageByte!!))
 
 
             }
