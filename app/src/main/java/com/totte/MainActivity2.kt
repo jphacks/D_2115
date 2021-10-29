@@ -22,48 +22,23 @@ import com.google.android.gms.nearby.connection.*
 import com.google.android.material.snackbar.Snackbar
 import com.totte.databinding.ActivityMain2Binding
 import java.io.FileOutputStream
-import java.nio.charset.StandardCharsets.UTF_8
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity2 : AppCompatActivity() {
-    /**
-     * Strategy for telling the Nearby Connections API how we want to discover and connect to
-     * other nearby devices. A star shaped strategy means we want to discover multiple devices but
-     * only connect to and communicate with one at a time.
-     */
+
     private val STRATEGY = Strategy.P2P_STAR
-
-    /**
-     * Our handle to the [Nearby Connections API][ConnectionsClient].
-     */
     private lateinit var connectionsClient: ConnectionsClient
-
-    /**
-     * The request code for verifying our call to [requestPermissions]. Recall that calling
-     * [requestPermissions] leads to a callback to [onRequestPermissionsResult]
-     */
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
-    /*
-    The following variables are convenient ways of tracking the data of the opponent that we
-    choose to play against.
-    */
-    private var newText : String? = null
     private var opponentName: String? = null
     private var opponentEndpointId: String? = null
     private lateinit var myName: String
-
-    /**
-     * This is for wiring and interacting with the UI views.
-     */
     private lateinit var binding: ActivityMain2Binding
 
-    /** callback for receiving payloads */
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             when (payload.type) {
                 Payload.Type.BYTES -> {
-                    // バイト配列を受け取った時
                     val cameraImage : ImageView = findViewById(R.id.cameraImage)
                     val tmp = payload.asBytes()!!
                     val bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp?.size!!)
@@ -76,7 +51,6 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
-    // Callbacks for connections to other devices
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
             // Accepting a connection means you want to receive messages. Hence, the API expects
@@ -92,7 +66,6 @@ class MainActivity2 : AppCompatActivity() {
                 opponentEndpointId = endpointId
                 binding.opponentName.text = opponentName
                 Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
-                // call()
             }
         }
 
@@ -101,7 +74,6 @@ class MainActivity2 : AppCompatActivity() {
     }
     private fun startAdvertising() {
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
-        // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
         connectionsClient.startAdvertising(
             myName,
             packageName,
@@ -109,13 +81,12 @@ class MainActivity2 : AppCompatActivity() {
             options
         )
     }
-    // Callbacks for finding other devices
+
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             connectionsClient.requestConnection(myName, endpointId, connectionLifecycleCallback)
             println("Found!!")
             Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
-            // call()
         }
 
         override fun onEndpointLost(endpointId: String) {
@@ -212,12 +183,7 @@ class MainActivity2 : AppCompatActivity() {
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
                 val sendImageByte = intent!!.getByteArrayExtra("KEY")
-
-                // println(sendImageByte?.size!!)
-                // バイト配列を送信する
                 connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromBytes(sendImageByte!!))
-
-
             }
         }
     }
