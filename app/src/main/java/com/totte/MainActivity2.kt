@@ -21,7 +21,9 @@ import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.android.material.snackbar.Snackbar
 import com.totte.databinding.ActivityMain2Binding
+import java.io.ByteArrayInputStream
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,15 +39,12 @@ class MainActivity2 : AppCompatActivity() {
 
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            when (payload.type) {
-                Payload.Type.BYTES -> {
-                    val cameraImage : ImageView = findViewById(R.id.cameraImage)
-                    val tmp = payload.asBytes()!!
-                    val bitmap = BitmapFactory.decodeByteArray(tmp, 0, tmp?.size!!)
-                    cameraImage.setImageBitmap(bitmap)
-                }
+                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                val payloadStream: Payload.Stream = payload.asStream()!!
+                val payloadInputStream = payloadStream.asInputStream()
+                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                cameraImage.setImageBitmap(bitmap)
             }
-        }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
         }
@@ -85,7 +84,7 @@ class MainActivity2 : AppCompatActivity() {
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
             connectionsClient.requestConnection(myName, endpointId, connectionLifecycleCallback)
-            println("Found!!")
+            // println("Found!!")
             Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
         }
 
@@ -183,7 +182,9 @@ class MainActivity2 : AppCompatActivity() {
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
                 val sendImageByte = intent!!.getByteArrayExtra("KEY")
-                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromBytes(sendImageByte!!))
+                val sendImageStream = ByteArrayInputStream(sendImageByte)
+                // println(sendImage?.size)
+                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
             }
         }
     }
