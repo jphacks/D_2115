@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/opponentName"
-        app:layout_constraintVertical_bias="0.564" />
+        app:layout_constraintVertical_bias="0.54" />
 
     <TextView
         android:id="@+id/opponentName"
