@@ -21,9 +21,7 @@ import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.android.material.snackbar.Snackbar
 import com.totte.databinding.ActivityMain2Binding
-import java.io.ByteArrayInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -181,10 +179,10 @@ class MainActivity2 : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, intent)
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
-                val sendImageByte = intent!!.getByteArrayExtra("KEY")
-                val sendImageStream = ByteArrayInputStream(sendImageByte)
+                val sendImagePath = intent?.getStringExtra("KEY",)
+                val sendImageFile = File(sendImagePath)
                 // println(sendImage?.size)
-                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
+                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromFile(sendImageFile))
             }
         }
     }
