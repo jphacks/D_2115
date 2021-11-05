@@ -105,11 +105,14 @@ class MainActivity2 : AppCompatActivity() {
         val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
 
         btnShooting.setOnClickListener {
+            /* デバッグ用
             if (opponentEndpointId != null) {
                 goShooting()
             } else {
                 Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
+            */
+            goShooting()
 
         }
 
@@ -180,9 +183,16 @@ class MainActivity2 : AppCompatActivity() {
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
                 val sendImagePath = intent?.getStringExtra("KEY",)
-                val sendImageFile = File(sendImagePath)
+                val sendImageStream = FileInputStream(File(sendImagePath))
                 // println(sendImage?.size)
-                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromFile(sendImageFile))
+                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
+
+                // debugのため手元で表示する
+                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                val payloadStream: Payload.Stream = Payload.fromStream(sendImageStream).asStream()!!
+                val payloadInputStream = payloadStream.asInputStream()
+                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                cameraImage.setImageBitmap(bitmap)
             }
         }
     }
