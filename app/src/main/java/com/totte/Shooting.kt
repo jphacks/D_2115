@@ -2,16 +2,24 @@ package com.totte
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.savedstate.SavedStateRegistryOwner
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -60,15 +68,19 @@ class Shooting : AppCompatActivity() {
     }
 
     private fun createSaveFileUri(): Uri {
+        println("Called: createSaveFileUri()")
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
-        val imageFileName = "tmp_" + timeStamp
+        val imageFileName = "tmp_$timeStamp"
 
-        val file = File.createTempFile(
-            imageFileName, /* prefix */
-            ".jpg", /* suffix */
+        val file = File(
+            filesDir,
+            "$imageFileName.jpg"
         )
 
+        file.createNewFile()
+
         path = file.absolutePath
+        println(path)
 
         return FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
     }
@@ -97,9 +109,11 @@ class Shooting : AppCompatActivity() {
                 }
              */
                  // 保存先を渡す
-        intent.putExtra("KEY", path)
+
+
+            println(path)
+            intent.putExtra("KEY", path)
         }
         finish()
     }
-
 }

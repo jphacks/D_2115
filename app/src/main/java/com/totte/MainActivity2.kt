@@ -2,12 +2,14 @@ package com.totte
 
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,6 +19,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.android.material.snackbar.Snackbar
@@ -27,6 +32,12 @@ import java.util.*
 
 class MainActivity2 : AppCompatActivity() {
 
+    companion object {
+        const val CAMERA_REQUEST_CODE = 10
+        const val CAMERA_PERMISSION_REQUEST_CODE = 20
+    }
+
+    private lateinit var sendImagePath: String
     private val STRATEGY = Strategy.P2P_STAR
     private lateinit var connectionsClient: ConnectionsClient
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
@@ -69,6 +80,7 @@ class MainActivity2 : AppCompatActivity() {
         override fun onDisconnected(endpointId: String) {
         }
     }
+
     private fun startAdvertising() {
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startAdvertising(
@@ -112,8 +124,13 @@ class MainActivity2 : AppCompatActivity() {
                 Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
             */
-            goShooting()
+            // goShooting()
 
+            if (checkCameraPermission()) {
+                shootPicture()
+            } else {
+                grantCameraPermission()
+            }
         }
 
         btnClose.setOnClickListener {
@@ -166,23 +183,68 @@ class MainActivity2 : AppCompatActivity() {
             }
             recreate()
         }
+
+        if (requestCode == MainActivity2.CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                shootPicture()
+            }
+        }
     }
     private fun startDiscovery(){
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startDiscovery(packageName,endpointDiscoveryCallback,options)
     }
 
+    private fun checkCameraPermission() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.CAMERA)
+
+    private fun grantCameraPermission() = ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
+        Shooting.CAMERA_PERMISSION_REQUEST_CODE
+    )
+
+    private fun shootPicture() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            addCategory(Intent.CATEGORY_DEFAULT)
+            putExtra(MediaStore.EXTRA_OUTPUT, createSaveFileUri())
+        }
+
+        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+
+    private fun createSaveFileUri(): Uri {
+        println("Called: createSaveFileUri()")
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
+        val imageFileName = "tmp_$timeStamp"
+
+        val file = File(
+            filesDir,
+            "$imageFileName.jpg"
+        )
+
+        file.createNewFile()
+
+        sendImagePath = file.absolutePath
+
+        return FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
+    }
+
     private fun goShooting() {
+        println("Called: fun goShooting()")
         val intent = Intent(this, Shooting::class.java)
         val requestCode = 1001
         startActivityForResult(intent, requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        println("Called: fun onActivityResult")
+        println(requestCode)
+        println(resultCode)
         super.onActivityResult(requestCode, resultCode, intent)
+
+        /*
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
                 val sendImagePath = intent?.getStringExtra("KEY",)
+                println(sendImagePath)
                 val sendImageStream = FileInputStream(File(sendImagePath))
                 // println(sendImage?.size)
                 // connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
@@ -194,6 +256,28 @@ class MainActivity2 : AppCompatActivity() {
                 val bitmap = BitmapFactory.decodeStream(payloadInputStream)
                 cameraImage.setImageBitmap(bitmap)
             }
+        }
+        */
+
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            /*
+            data?.extras?.get("data").let { it ->
+                val baos: ByteArrayOutputStream = ByteArrayOutputStream()
+                (it as Bitmap).compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                val jpgarr: ByteArray = baos.toByteArray()
+
+                intent.putExtra("KEY", jpgarr)
+                setResult(Activity.RESULT_OK, intent)
+                }
+             */
+            // 保存先を渡す
+            val sendImageStream = FileInputStream(File(sendImagePath))
+
+            val cameraImage : ImageView = findViewById(R.id.cameraImage)
+            val payloadStream: Payload.Stream = Payload.fromStream(sendImageStream).asStream()!!
+            val payloadInputStream = payloadStream.asInputStream()
+            val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+            cameraImage.setImageBitmap(bitmap)
         }
     }
 
