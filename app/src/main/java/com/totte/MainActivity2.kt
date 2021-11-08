@@ -38,7 +38,7 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     private lateinit var sendImagePath: String
-    private val STRATEGY = Strategy.P2P_STAR
+    private val STRATEGY = Strategy.P2P_POINT_TO_POINT
     private lateinit var connectionsClient: ConnectionsClient
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
     private var opponentName: String? = null
@@ -272,6 +272,7 @@ class MainActivity2 : AppCompatActivity() {
              */
             // 保存先を渡す
             val sendImageStream = FileInputStream(File(sendImagePath))
+            connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
 
             val cameraImage : ImageView = findViewById(R.id.cameraImage)
             val payloadStream: Payload.Stream = Payload.fromStream(sendImageStream).asStream()!!
