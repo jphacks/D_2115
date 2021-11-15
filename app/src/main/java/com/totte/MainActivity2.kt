@@ -53,6 +53,7 @@ class MainActivity2 : AppCompatActivity() {
 
     private lateinit var myFirebaseID: String
     private var opponentFirebaseID: String? = null
+    private lateinit var dbName: String
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -80,6 +81,7 @@ class MainActivity2 : AppCompatActivity() {
             connectionsClient.acceptConnection(endpointId, payloadCallback)
             opponentName = "お相手のID：${info.endpointName}"
             opponentFirebaseID = info.endpointName
+            defineDB()
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -131,77 +133,10 @@ class MainActivity2 : AppCompatActivity() {
         val btnShooting : Button = findViewById(R.id.btnShooting)
         val btnClose : Button = findViewById(R.id.btnClose)
 
-
-
         // val myId : TextView = findViewById(R.id.myId)
-        val send : Button = findViewById(R.id.send)
-        val messageEdit : EditText = findViewById(R.id.messageEdit)
         // val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
 
-        //自分のユーザー名を表示
-        // myId.setText(myFirebaseID)
-
-        db = FirebaseFirestore.getInstance()
-        val allMessages = ArrayList<List<String?>>()
-        db.collection("messages")
-            .document(myFirebaseID)
-            .collection("inbox")
-            .orderBy("datetime", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val message = document.getString("message")
-                    val sender = document.getString("sender")
-                    allMessages.add(listOf(message, sender))
-                }
-
-                viewManager = LinearLayoutManager(this)
-                viewAdapter = MyAdapter(allMessages)
-                recyclerView = binding.messageInbox.apply {
-                    setHasFixedSize(true)
-                    layoutManager = viewManager
-                    adapter = viewAdapter
-                }
-            }
-
-        //　Firestore更新時の操作の登録
-        db.collection("messages")
-            .document(myFirebaseID)
-            .collection("inbox")
-            .orderBy("datetime", Query.Direction.DESCENDING)
-            // Firestoreの更新時の操作を登録
-            .addSnapshotListener { value, e ->
-                if (e != null) {
-                    Log.w("Firestore", "Listen failed.", e)
-                    return@addSnapshotListener
-                }
-
-                allMessages.clear()
-                for (doc in value!!) {
-                    val message = doc.getString("message")
-                    val sender = doc.getString("sender")
-                    allMessages.add(listOf(message, sender))
-                }
-
-                // RecyclerViewの更新
-                viewAdapter.notifyDataSetChanged()
-            }
-
-
-        //送信ボタン押下時の設定
-        send.setOnClickListener {
-            sendMessage(myFirebaseID, messageEdit.text.toString())
-        }
-
         btnShooting.setOnClickListener {
-            /* デバッグ用
-            if (opponentEndpointId != null) {
-                goShooting()
-            } else {
-                Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
-            }
-            */
-            // goShooting()
 
             if (!checkCameraPermission()) {
                 grantCameraPermission()
@@ -385,5 +320,64 @@ class MainActivity2 : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Log.w("Firestore", "Error writing document", e)
             }
+    }
+    private fun defineDB(){
+        val ids = listOf(myFirebaseID, opponentFirebaseID!!)
+        val ordered_ids = ids.sorted()
+        val send : Button = findViewById(R.id.send)
+        val messageEdit : EditText = findViewById(R.id.messageEdit)
+        val allMessages = ArrayList<List<String?>>()
+
+        dbName = ordered_ids[0] + ordered_ids[1]
+        db = FirebaseFirestore.getInstance()
+        db.collection("messages")
+            .document(dbName)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val message = document.getString("message")
+                    val sender = document.getString("sender")
+                    allMessages.add(listOf(message, sender))
+                }
+
+                viewManager = LinearLayoutManager(this)
+                viewAdapter = MyAdapter(allMessages)
+                recyclerView = binding.messageInbox.apply {
+                    setHasFixedSize(true)
+                    layoutManager = viewManager
+                    adapter = viewAdapter
+                }
+            }
+
+        //　Firestore更新時の操作の登録
+        db.collection("messages")
+            .document(dbName)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            // Firestoreの更新時の操作を登録
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    Log.w("Firestore", "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+
+                allMessages.clear()
+                for (doc in value!!) {
+                    val message = doc.getString("message")
+                    val sender = doc.getString("sender")
+                    allMessages.add(listOf(message, sender))
+                }
+
+                // RecyclerViewの更新
+                viewAdapter.notifyDataSetChanged()
+            }
+
+
+        //送信ボタン押下時の設定
+        send.setOnClickListener {
+            sendMessage(dbName, messageEdit.text.toString())
+        }
     }
 }
