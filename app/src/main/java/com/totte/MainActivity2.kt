@@ -51,7 +51,8 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var myName: String
     private lateinit var binding: ActivityMain2Binding
 
-    private lateinit var myEmailAddr: String
+    private lateinit var myFirebaseID: String
+    private var opponentFirebaseID: String? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -77,7 +78,8 @@ class MainActivity2 : AppCompatActivity() {
             // Accepting a connection means you want to receive messages. Hence, the API expects
             // that you attach a PayloadCall to the acceptance
             connectionsClient.acceptConnection(endpointId, payloadCallback)
-            opponentName = "お相手の特徴：${info.endpointName}"
+            opponentName = "お相手のID：${info.endpointName}"
+            opponentFirebaseID = info.endpointName
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -96,7 +98,7 @@ class MainActivity2 : AppCompatActivity() {
     private fun startAdvertising() {
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startAdvertising(
-            myName,
+            myFirebaseID,//myName,
             packageName,
             connectionLifecycleCallback,
             options
@@ -105,7 +107,7 @@ class MainActivity2 : AppCompatActivity() {
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            connectionsClient.requestConnection(myName, endpointId, connectionLifecycleCallback)
+            connectionsClient.requestConnection(myFirebaseID, endpointId, connectionLifecycleCallback)
             // println("Found!!")
             Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
         }
@@ -121,13 +123,15 @@ class MainActivity2 : AppCompatActivity() {
         setContentView(binding.root)
         connectionsClient = Nearby.getConnectionsClient(this)
         myName = intent.getStringExtra("NAME").toString()
+        myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
         startAdvertising()
         startDiscovery()
 
         val btnShooting : Button = findViewById(R.id.btnShooting)
         val btnClose : Button = findViewById(R.id.btnClose)
 
-        myEmailAddr = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
 
         // val myId : TextView = findViewById(R.id.myId)
         val send : Button = findViewById(R.id.send)
@@ -135,12 +139,12 @@ class MainActivity2 : AppCompatActivity() {
         // val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
 
         //自分のユーザー名を表示
-        // myId.setText(myEmailAddr)
+        // myId.setText(myFirebaseID)
 
         db = FirebaseFirestore.getInstance()
         val allMessages = ArrayList<List<String?>>()
         db.collection("messages")
-            .document(myEmailAddr)
+            .document(myFirebaseID)
             .collection("inbox")
             .orderBy("datetime", Query.Direction.DESCENDING)
             .get()
@@ -162,7 +166,7 @@ class MainActivity2 : AppCompatActivity() {
 
         //　Firestore更新時の操作の登録
         db.collection("messages")
-            .document(myEmailAddr)
+            .document(myFirebaseID)
             .collection("inbox")
             .orderBy("datetime", Query.Direction.DESCENDING)
             // Firestoreの更新時の操作を登録
@@ -186,7 +190,7 @@ class MainActivity2 : AppCompatActivity() {
 
         //送信ボタン押下時の設定
         send.setOnClickListener {
-            sendMessage(myEmailAddr, messageEdit.text.toString())
+            sendMessage(myFirebaseID, messageEdit.text.toString())
         }
 
         btnShooting.setOnClickListener {
@@ -199,10 +203,13 @@ class MainActivity2 : AppCompatActivity() {
             */
             // goShooting()
 
-            if (checkCameraPermission()) {
+            if (!checkCameraPermission()) {
+                grantCameraPermission()
+            }
+            if (opponentEndpointId != null) {
                 shootPicture()
             } else {
-                grantCameraPermission()
+                Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
         }
 
@@ -363,7 +370,7 @@ class MainActivity2 : AppCompatActivity() {
 
         val mail = hashMapOf(
             "datetime" to format.format(date),
-            "sender" to myEmailAddr,
+            "sender" to myFirebaseID,
             "message" to message
         )
 
