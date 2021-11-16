@@ -1,0 +1,57 @@
+Index: app/src/main/res/layout/activity_main2.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    tools:context=\".MainActivity2\"\r\n    android:id=\"@+id/layoutMain2\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/cameraImage\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        tools:layout_editor_absoluteX=\"-16dp\"\r\n        tools:layout_editor_absoluteY=\"-27dp\" />\r\n\r\n    <TextView\r\n        android:id=\"@+id/opponentName\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_gravity=\"center\"\r\n        android:layout_marginTop=\"120dp\"\r\n        android:text=\"お相手の特徴：\"\r\n        android:textAlignment=\"center\"\r\n        android:textAppearance=\"?android:textAppearanceMedium\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"1.0\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\" />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnShooting\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"撮ってあげる\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.055\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintVertical_bias=\"0.049\" />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnClose\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"さようなら\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.947\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\"\r\n        app:layout_constraintVertical_bias=\"0.049\" />\r\n\r\n    <Button\r\n        android:id=\"@+id/btnSavePicture\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"保存\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"parent\"\r\n        app:layout_constraintHorizontal_bias=\"0.498\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toBottomOf=\"@+id/btnClose\"\r\n        app:layout_constraintVertical_bias=\"0.932\" />\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_main2.xml b/app/src/main/res/layout/activity_main2.xml
+--- a/app/src/main/res/layout/activity_main2.xml	(revision f3219a56f2b07947386aee93e3e8a761ba286369)
++++ b/app/src/main/res/layout/activity_main2.xml	(date 1635410399956)
+@@ -64,4 +64,45 @@
+         app:layout_constraintTop_toBottomOf="@+id/btnClose"
+         app:layout_constraintVertical_bias="0.932" />
+ 
++    <com.google.android.material.textfield.TextInputLayout
++        android:id="@+id/textInputLayout"
++        android:layout_width="387dp"
++        android:layout_height="wrap_content"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        tools:layout_editor_absoluteY="222dp">
++
++        <com.google.android.material.textfield.TextInputEditText
++            android:id="@+id/inputForm"
++            android:layout_width="match_parent"
++            android:layout_height="wrap_content"
++            android:hint="hint" />
++    </com.google.android.material.textfield.TextInputLayout>
++
++    <Button
++        android:id="@+id/btmSend"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:layout_marginTop="54dp"
++        android:text="送る"
++        app:layout_constraintEnd_toEndOf="parent"
++        app:layout_constraintStart_toStartOf="parent"
++        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
++
++    <TextView
++        android:id="@+id/history0"
++        android:layout_width="match_parent"
++        android:layout_height="50dp"
++        android:text="TextView"
++        app:layout_constraintTop_toBottomOf="@+id/btmSend"
++        tools:layout_editor_absoluteX="171dp" />
++
++    <TextView
++        android:id="@+id/history1"
++        android:layout_width="match_parent"
++        android:layout_height="50dp"
++        android:text="TextView"
++        app:layout_constraintTop_toBottomOf="@+id/history0"
++        tools:layout_editor_absoluteX="12dp" />
++
+ </androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
