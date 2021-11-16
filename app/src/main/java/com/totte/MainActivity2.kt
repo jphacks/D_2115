@@ -22,10 +22,13 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
 import com.totte.databinding.ActivityMain2Binding
+import com.totte.databinding.ActivityTalkingBinding
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -45,6 +48,14 @@ class MainActivity2 : AppCompatActivity() {
     private var opponentEndpointId: String? = null
     private lateinit var myName: String
     private lateinit var binding: ActivityMain2Binding
+
+    private lateinit var myEmailAddr: String
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var db: FirebaseFirestore
+
+    private var allMessages = ArrayList<List<String?>>()
 
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {

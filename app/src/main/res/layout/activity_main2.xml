@@ -7,30 +7,6 @@
     tools:context=".MainActivity2"
     android:id="@+id/layoutMain2">
 
-    <ImageView
-        android:id="@+id/cameraImage"
-        android:layout_width="243dp"
-        android:layout_height="476dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnSavePicture"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/opponentName"
-        app:layout_constraintVertical_bias="0.54" />
-
-    <TextView
-        android:id="@+id/opponentName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="104dp"
-        android:text="お相手の特徴："
-        android:textAlignment="center"
-        android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/btnShooting"
         android:layout_width="wrap_content"
@@ -55,16 +31,53 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.049" />
 
+    <EditText
+        android:id="@+id/messageEdit"
+        android:layout_width="349dp"
+        android:layout_height="47dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="50dp"
+        android:layout_marginVertical="10dp"
+        android:layout_marginStart="4dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="送信メッセージ"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
-        android:id="@+id/btnSavePicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="保存"
+        android:id="@+id/send"
+        android:layout_width="44dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="▶"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.166"
+        app:layout_constraintStart_toEndOf="@+id/messageEdit" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messageInbox"
+        android:layout_width="fill_parent"
+        android:layout_height="569dp"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnClose"
-        app:layout_constraintVertical_bias="0.951" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.558" />
+
+    <ImageView
+        android:id="@+id/cameraImage"
+        android:layout_width="243dp"
+        android:layout_height="476dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
