@@ -129,13 +129,13 @@ class MainActivity2 : AppCompatActivity() {
 
         myEmailAddr = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
-        val myId : TextView = findViewById(R.id.myId)
+        // val myId : TextView = findViewById(R.id.myId)
         val send : Button = findViewById(R.id.send)
         val messageEdit : EditText = findViewById(R.id.messageEdit)
-        val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
+        // val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
 
         //自分のユーザー名を表示
-        myId.setText(myEmailAddr)
+        // myId.setText(myEmailAddr)
 
         db = FirebaseFirestore.getInstance()
         val allMessages = ArrayList<List<String?>>()
@@ -186,7 +186,7 @@ class MainActivity2 : AppCompatActivity() {
 
         //送信ボタン押下時の設定
         send.setOnClickListener {
-            sendMessage(destEmailAddrEdit.text.toString(), messageEdit.text.toString())
+            sendMessage(myEmailAddr, messageEdit.text.toString())
         }
 
         btnShooting.setOnClickListener {
