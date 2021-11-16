@@ -327,7 +327,11 @@ class MainActivity2 : AppCompatActivity() {
         val messageEdit : EditText = findViewById(R.id.messageEdit)
         val allMessages = ArrayList<List<String?>>()
 
+        viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
+        viewAdapter = MyAdapter(allMessages)
+
         dbName = ordered_ids[0] + ordered_ids[1]
+        Log.d("TAG", "DBNAME: $dbName")
         db = FirebaseFirestore.getInstance()
         db.collection("messages")
             .document(dbName)
@@ -341,7 +345,7 @@ class MainActivity2 : AppCompatActivity() {
                     allMessages.add(listOf(message, sender))
                 }
 
-                viewManager = LinearLayoutManager(this)
+                viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
                 viewAdapter = MyAdapter(allMessages)
                 recyclerView = binding.messageInbox.apply {
                     setHasFixedSize(true)
