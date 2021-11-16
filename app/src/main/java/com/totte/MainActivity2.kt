@@ -38,7 +38,7 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     private lateinit var sendImagePath: String
-    private val STRATEGY = Strategy.P2P_STAR
+    private val STRATEGY = Strategy.P2P_POINT_TO_POINT
     private lateinit var connectionsClient: ConnectionsClient
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
     private var opponentName: String? = null
@@ -260,24 +260,8 @@ class MainActivity2 : AppCompatActivity() {
         */
 
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            /*
-            data?.extras?.get("data").let { it ->
-                val baos: ByteArrayOutputStream = ByteArrayOutputStream()
-                (it as Bitmap).compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                val jpgarr: ByteArray = baos.toByteArray()
-
-                intent.putExtra("KEY", jpgarr)
-                setResult(Activity.RESULT_OK, intent)
-                }
-             */
-            // 保存先を渡す
             val sendImageStream = FileInputStream(File(sendImagePath))
-
-            val cameraImage : ImageView = findViewById(R.id.cameraImage)
-            val payloadStream: Payload.Stream = Payload.fromStream(sendImageStream).asStream()!!
-            val payloadInputStream = payloadStream.asInputStream()
-            val bitmap = BitmapFactory.decodeStream(payloadInputStream)
-            cameraImage.setImageBitmap(bitmap)
+            connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
         }
     }
 
