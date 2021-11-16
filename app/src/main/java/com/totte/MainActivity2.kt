@@ -35,6 +35,9 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+
+data class PlaceItemEntity(val payloadInputStream : InputStream) : Serializable
+
 class MainActivity2 : AppCompatActivity() {
 
     companion object {
@@ -61,11 +64,12 @@ class MainActivity2 : AppCompatActivity() {
 
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                // val cameraImage : ImageView = findViewById(R.id.cameraImage)
                 val payloadStream: Payload.Stream = payload.asStream()!!
                 val payloadInputStream = payloadStream.asInputStream()
-                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
-                cameraImage.setImageBitmap(bitmap)
+                previewImage(payloadInputStream)
+                // val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                // cameraImage.setImageBitmap(bitmap)
             }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
@@ -112,6 +116,13 @@ class MainActivity2 : AppCompatActivity() {
 
         override fun onEndpointLost(endpointId: String) {
         }
+    }
+
+    private fun previewImage(image : InputStream) {
+        val intent = Intent(this, savePicture::class.java)
+        val imageByteArray = image.readBytes()
+        intent.putExtra("IMAGE", imageByteArray)
+        startActivity(intent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -190,20 +201,18 @@ class MainActivity2 : AppCompatActivity() {
         }
 
         btnShooting.setOnClickListener {
-            /* デバッグ用
             if (opponentEndpointId != null) {
-                goShooting()
+                if (checkCameraPermission()) {
+                    shootPicture()
+                } else {
+                    grantCameraPermission()
+                }
             } else {
                 Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
-            */
+
             // goShooting()
 
-            if (checkCameraPermission()) {
-                shootPicture()
-            } else {
-                grantCameraPermission()
-            }
         }
 
         btnClose.setOnClickListener {
