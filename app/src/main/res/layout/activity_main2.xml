@@ -44,7 +44,8 @@
         android:hint="送信メッセージ"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/border" />
 
     <Button
         android:id="@+id/send"

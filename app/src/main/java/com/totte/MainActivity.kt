@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
         signInAnonymously()
 
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
-        val btnChatBegin : Button = findViewById(R.id.btnChatBegin)
         val name : EditText = findViewById(R.id.name)
 
         btnSearchBegin.setOnClickListener {
@@ -35,11 +34,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        btnChatBegin.setOnClickListener {
-            val intent = Intent(this, Talking::class.java)
-            // intent.putExtra("UID", auth.currentUser?.uid.toString())
-            startActivity(intent)
-        }
     }
 
     private fun signInAnonymously() {
