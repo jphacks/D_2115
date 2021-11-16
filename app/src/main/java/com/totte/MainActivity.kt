@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         signInAnonymously()
 
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
-        val name : EditText = findViewById(R.id.name)
+        val btnProfile : Button = findViewById(R.id.btnProfile)
         val searchingText : TextView = findViewById(R.id.searchingText)
         val progressBar : ProgressBar = findViewById(R.id.progressBar)
 
@@ -50,9 +50,14 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
 
             val intent = Intent(this, MainActivity2::class.java)
-            intent.putExtra("NAME",name.text.toString())
             startActivity(intent)
         }
+
+        btnProfile.setOnClickListener {
+            val intent = Intent(this, EditProfile::class.java)
+            startActivity(intent)
+        }
+
     }
 
     override fun onRestart() {

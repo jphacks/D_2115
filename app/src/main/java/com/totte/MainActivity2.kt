@@ -145,7 +145,6 @@ class MainActivity2 : AppCompatActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         connectionsClient = Nearby.getConnectionsClient(this)
-        myName = intent.getStringExtra("NAME").toString()
         myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         startAdvertising()
