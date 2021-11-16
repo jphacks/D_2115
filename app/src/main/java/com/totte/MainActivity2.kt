@@ -325,7 +325,8 @@ class MainActivity2 : AppCompatActivity() {
         val ordered_ids = ids.sorted()
         val send : Button = findViewById(R.id.send)
         val messageEdit : EditText = findViewById(R.id.messageEdit)
-        val allMessages = ArrayList<List<String?>>()
+        //val allMessages = ArrayList<List<String?>>()
+        val allMessages = ArrayList<Pair<String, Boolean>>()
 
         viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
         viewAdapter = MyAdapter(allMessages)
@@ -342,7 +343,8 @@ class MainActivity2 : AppCompatActivity() {
                 for (document in result) {
                     val message = document.getString("message")
                     val sender = document.getString("sender")
-                    allMessages.add(listOf(message, sender))
+                    val isMyMessage = (sender == myFirebaseID)
+                    allMessages.add(Pair(message, isMyMessage) as Pair<String, Boolean>)
                 }
 
                 viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
@@ -370,7 +372,9 @@ class MainActivity2 : AppCompatActivity() {
                 for (doc in value!!) {
                     val message = doc.getString("message")
                     val sender = doc.getString("sender")
-                    allMessages.add(listOf(message, sender))
+                    val isMyMessage = (sender == myFirebaseID)
+                    allMessages.add(Pair(message, isMyMessage) as Pair<String, Boolean>)
+                    //allMessages.add(listOf(message, sender))
                 }
 
                 // RecyclerViewの更新
