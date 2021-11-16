@@ -30,7 +30,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.totte.databinding.ActivityMain2Binding
-import com.totte.databinding.ActivityTalkingBinding
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
