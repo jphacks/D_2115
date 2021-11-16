@@ -260,25 +260,8 @@ class MainActivity2 : AppCompatActivity() {
         */
 
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            /*
-            data?.extras?.get("data").let { it ->
-                val baos: ByteArrayOutputStream = ByteArrayOutputStream()
-                (it as Bitmap).compress(Bitmap.CompressFormat.JPEG, 100, baos)
-                val jpgarr: ByteArray = baos.toByteArray()
-
-                intent.putExtra("KEY", jpgarr)
-                setResult(Activity.RESULT_OK, intent)
-                }
-             */
-            // 保存先を渡す
             val sendImageStream = FileInputStream(File(sendImagePath))
             connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
-
-            val cameraImage : ImageView = findViewById(R.id.cameraImage)
-            val payloadStream: Payload.Stream = Payload.fromStream(sendImageStream).asStream()!!
-            val payloadInputStream = payloadStream.asInputStream()
-            val bitmap = BitmapFactory.decodeStream(payloadInputStream)
-            cameraImage.setImageBitmap(bitmap)
         }
     }
 
