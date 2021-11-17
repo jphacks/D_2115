@@ -33,6 +33,20 @@ import com.totte.databinding.ActivityMain2Binding
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import android.app.Application
+
+class MyApp :Application(){
+    var imageInputStream: InputStream? = null
+
+    companion object {
+        private var instance : MyApp? = null
+        fun  getInstance(): MyApp {
+            if (instance == null)
+                instance = MyApp()
+            return instance!!
+        }
+    }
+}
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -62,11 +76,12 @@ class MainActivity2 : AppCompatActivity() {
 
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                // val cameraImage : ImageView = findViewById(R.id.cameraImage)
                 val payloadStream: Payload.Stream = payload.asStream()!!
                 val payloadInputStream = payloadStream.asInputStream()
-                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
-                cameraImage.setImageBitmap(bitmap)
+                previewImage(payloadInputStream)
+                // val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                // cameraImage.setImageBitmap(bitmap)
             }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
@@ -117,6 +132,13 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
+    private fun previewImage(image : InputStream) {
+        val myApp = MyApp.getInstance()
+        myApp.imageInputStream = image
+        val intent = Intent(this, savePicture::class.java)
+        startActivity(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
@@ -136,12 +158,12 @@ class MainActivity2 : AppCompatActivity() {
         // val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
 
         btnShooting.setOnClickListener {
-
-            if (!checkCameraPermission()) {
-                grantCameraPermission()
-            }
             if (opponentEndpointId != null) {
-                shootPicture()
+                if (checkCameraPermission()) {
+                    shootPicture()
+                } else {
+                    grantCameraPermission()
+                }
             } else {
                 Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
