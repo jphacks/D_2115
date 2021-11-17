@@ -36,6 +36,7 @@ import java.util.*
 import android.app.Application
 import java.nio.file.Files
 import java.nio.file.Paths
+import android.view.View
 
 class MyApp :Application(){
     var imageInputStream: InputStream? = null
@@ -149,6 +150,11 @@ class MainActivity2 : AppCompatActivity() {
         connectionsClient = Nearby.getConnectionsClient(this)
         myName = intent.getStringExtra("NAME").toString()
         myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+        val searchingMessage : TextView = findViewById(R.id.searchingMessage)
+        val progressBar : ProgressBar = findViewById(R.id.progressBar)
+        searchingMessage.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
 
         startAdvertising()
         startDiscovery()
@@ -333,6 +339,11 @@ class MainActivity2 : AppCompatActivity() {
         val messageEdit : EditText = findViewById(R.id.messageEdit)
         //val allMessages = ArrayList<List<String?>>()
         val allMessages = ArrayList<Pair<String, Boolean>>()
+
+        val searchingMessage : TextView = findViewById(R.id.searchingMessage)
+        val progressBar : ProgressBar = findViewById(R.id.progressBar)
+        searchingMessage.visibility = View.GONE
+        progressBar.visibility = View.GONE
 
         viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
         viewAdapter = MyAdapter(allMessages)

@@ -35,35 +35,13 @@ class MainActivity : AppCompatActivity() {
 
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
         val name : EditText = findViewById(R.id.name)
-        val searchingText : TextView = findViewById(R.id.searchingText)
-        val progressBar : ProgressBar = findViewById(R.id.progressBar)
-
-        searchingText.visibility = View.GONE
-        progressBar.visibility = View.GONE
-        //shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime)
-
 
         btnSearchBegin.setOnClickListener {
-
-            searchingText.visibility = View.VISIBLE
-            btnSearchBegin.visibility = View.GONE
-            progressBar.visibility = View.VISIBLE
 
             val intent = Intent(this, MainActivity2::class.java)
             intent.putExtra("NAME",name.text.toString())
             startActivity(intent)
         }
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-
-        val searchingText : TextView = findViewById(R.id.searchingText)
-        val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
-        val progressBar : ProgressBar = findViewById(R.id.progressBar)
-        searchingText.visibility = View.GONE
-        btnSearchBegin.visibility = View.VISIBLE
-        progressBar.visibility = View.GONE
     }
 
     private fun signInAnonymously() {
