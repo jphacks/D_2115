@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FB00DA"
-    tools:context=".savePicture">
+    tools:context=".savePicture"
+    android:id="@+id/layoutSave">
 
     <ImageView
         android:id="@+id/cameraImage"

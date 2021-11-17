@@ -38,7 +38,7 @@ class savePicture : AppCompatActivity() {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
             val fileName = "totte$timeStamp.jpeg"
             saveToPublish(targetBitmap, fileName)
-            Snackbar.make(findViewById(R.id.layoutMain2), "保存完了", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(findViewById(R.id.layoutSave), "保存完了", Snackbar.LENGTH_SHORT).show()
             finish()
         }
     }
