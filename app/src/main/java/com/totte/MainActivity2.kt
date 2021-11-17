@@ -53,7 +53,6 @@ class MainActivity2 : AppCompatActivity() {
     companion object {
         const val CAMERA_REQUEST_CODE = 10
         const val CAMERA_PERMISSION_REQUEST_CODE = 20
-        const val SAVE_PICTURE_REQUEST_CODE = 30
     }
 
     private lateinit var sendImagePath: String
