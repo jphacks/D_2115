@@ -20,14 +20,28 @@
         app:layout_constraintVertical_bias="0.426" />
 
     <Button
+        android:id="@+id/btnDisposePicture"
+        android:layout_width="111dp"
+        android:layout_height="94dp"
+        android:text="破棄"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.283"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cameraImage"
+        app:layout_constraintVertical_bias="0.525" />
+
+    <Button
         android:id="@+id/btnSavePicture"
         android:layout_width="111dp"
         android:layout_height="94dp"
         android:text="保存"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.716"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cameraImage" />
+        app:layout_constraintTop_toBottomOf="@+id/cameraImage"
+        app:layout_constraintVertical_bias="0.525" />
 
     <TextView
         android:id="@+id/textView"
