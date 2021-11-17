@@ -23,15 +23,15 @@
         android:id="@+id/btnSearchBegin"
         android:layout_width="0dp"
         android:layout_height="98dp"
-        android:text="search"
+        android:layout_margin="16dp"
+        android:text="@string/search_btn_txt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
-        app:layout_constraintHorizontal_weight="1"
-        android:layout_margin="16dp"/>
+        app:layout_constraintVertical_bias="0.499" />
 
     <Button
         android:id="@+id/btnChatBegin"
@@ -52,7 +52,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/name"
+        app:autoSizeMinTextSize="200sp"
+        app:autoSizeMaxTextSize="1000sp"
         app:layout_constraintHorizontal_weight="1" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnSearchBegin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/searchingText"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

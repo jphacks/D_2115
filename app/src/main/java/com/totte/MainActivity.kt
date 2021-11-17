@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -33,8 +30,10 @@ class MainActivity : AppCompatActivity() {
         val btnChatBegin : Button = findViewById(R.id.btnChatBegin)
         val name : EditText = findViewById(R.id.name)
         val searchingText : TextView = findViewById(R.id.searchingText)
+        val progressBar : ProgressBar = findViewById(R.id.progressBar)
 
         searchingText.visibility = View.GONE
+        progressBar.visibility = View.GONE
         //shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime)
 
 
@@ -42,6 +41,7 @@ class MainActivity : AppCompatActivity() {
 
             searchingText.visibility = View.VISIBLE
             btnSearchBegin.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
 
             val intent = Intent(this, MainActivity2::class.java)
             intent.putExtra("NAME",name.text.toString())
@@ -60,8 +60,10 @@ class MainActivity : AppCompatActivity() {
 
         val searchingText : TextView = findViewById(R.id.searchingText)
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
+        val progressBar : ProgressBar = findViewById(R.id.progressBar)
         searchingText.visibility = View.GONE
         btnSearchBegin.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
     }
 
     private fun signInAnonymously() {

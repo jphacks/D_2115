@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">totte</string>
+    <string name="search_btn_txt">SEARCH</string>
 </resources>
