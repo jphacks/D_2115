@@ -23,12 +23,14 @@ class savePicture : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_save_picture)
 
-        val image = intent.getByteArrayExtra("IMAGE")
-        val cameraImage : ImageView = findViewById(R.id.cameraImage)
-        val bitmap = image?.let { BitmapFactory.decodeByteArray(image, 0, it.size) }
-        cameraImage.setImageBitmap(bitmap)
 
+        val cameraImage : ImageView = findViewById(R.id.cameraImage)
+        val myApp = MyApp.getInstance()
+        val imageInputStream = myApp.imageInputStream
         val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
+
+        val bitmap = BitmapFactory.decodeStream(imageInputStream)
+        cameraImage.setImageBitmap(bitmap)
 
         btnSavePicture.setOnClickListener {
             val targetImage : ImageView = findViewById(R.id.cameraImage)

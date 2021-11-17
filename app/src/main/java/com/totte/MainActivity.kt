@@ -1,11 +1,15 @@
 package com.totte
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
         val btnChatBegin : Button = findViewById(R.id.btnChatBegin)
+        val btnTest : Button = findViewById(R.id.btnTest)
         val name : EditText = findViewById(R.id.name)
 
         btnSearchBegin.setOnClickListener {
@@ -39,6 +44,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, Talking::class.java)
             // intent.putExtra("UID", auth.currentUser?.uid.toString())
             startActivity(intent)
+        }
+
+        btnTest.setOnClickListener {
+
         }
     }
 

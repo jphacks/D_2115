@@ -34,9 +34,20 @@ import com.totte.databinding.ActivityTalkingBinding
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import android.app.Application
 
+class MyApp :Application(){
+    var imageInputStream: InputStream? = null
 
-data class PlaceItemEntity(val payloadInputStream : InputStream) : Serializable
+    companion object {
+        private var instance : MyApp? = null
+        fun  getInstance(): MyApp {
+            if (instance == null)
+                instance = MyApp()
+            return instance!!
+        }
+    }
+}
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -119,9 +130,9 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     private fun previewImage(image : InputStream) {
+        val myApp = MyApp.getInstance()
+        myApp.imageInputStream = image
         val intent = Intent(this, savePicture::class.java)
-        val imageByteArray = image.readBytes()
-        intent.putExtra("IMAGE", imageByteArray)
         startActivity(intent)
     }
 
