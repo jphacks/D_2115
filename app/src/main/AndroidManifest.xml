@@ -20,6 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Totte">
         <activity
+            android:name=".savePicture"
+            android:exported="false" />
+        <activity
             android:name=".MyAdapter"
             android:exported="false" />
         <activity

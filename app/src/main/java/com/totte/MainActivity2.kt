@@ -30,10 +30,23 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.totte.databinding.ActivityMain2Binding
-import com.totte.databinding.ActivityTalkingBinding
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import android.app.Application
+
+class MyApp :Application(){
+    var imageInputStream: InputStream? = null
+
+    companion object {
+        private var instance : MyApp? = null
+        fun  getInstance(): MyApp {
+            if (instance == null)
+                instance = MyApp()
+            return instance!!
+        }
+    }
+}
 
 class MainActivity2 : AppCompatActivity() {
 
@@ -63,11 +76,12 @@ class MainActivity2 : AppCompatActivity() {
 
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                // val cameraImage : ImageView = findViewById(R.id.cameraImage)
                 val payloadStream: Payload.Stream = payload.asStream()!!
                 val payloadInputStream = payloadStream.asInputStream()
-                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
-                cameraImage.setImageBitmap(bitmap)
+                previewImage(payloadInputStream)
+                // val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                // cameraImage.setImageBitmap(bitmap)
             }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
@@ -118,6 +132,13 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
+    private fun previewImage(image : InputStream) {
+        val myApp = MyApp.getInstance()
+        myApp.imageInputStream = image
+        val intent = Intent(this, savePicture::class.java)
+        startActivity(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
@@ -137,12 +158,12 @@ class MainActivity2 : AppCompatActivity() {
         // val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
 
         btnShooting.setOnClickListener {
-
-            if (!checkCameraPermission()) {
-                grantCameraPermission()
-            }
             if (opponentEndpointId != null) {
-                shootPicture()
+                if (checkCameraPermission()) {
+                    shootPicture()
+                } else {
+                    grantCameraPermission()
+                }
             } else {
                 Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
@@ -326,9 +347,14 @@ class MainActivity2 : AppCompatActivity() {
         val ordered_ids = ids.sorted()
         val send : Button = findViewById(R.id.send)
         val messageEdit : EditText = findViewById(R.id.messageEdit)
-        val allMessages = ArrayList<List<String?>>()
+        //val allMessages = ArrayList<List<String?>>()
+        val allMessages = ArrayList<Pair<String, Boolean>>()
+
+        viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
+        viewAdapter = MyAdapter(allMessages)
 
         dbName = ordered_ids[0] + ordered_ids[1]
+        Log.d("TAG", "DBNAME: $dbName")
         db = FirebaseFirestore.getInstance()
         db.collection("messages")
             .document(dbName)
@@ -339,10 +365,11 @@ class MainActivity2 : AppCompatActivity() {
                 for (document in result) {
                     val message = document.getString("message")
                     val sender = document.getString("sender")
-                    allMessages.add(listOf(message, sender))
+                    val isMyMessage = (sender == myFirebaseID)
+                    allMessages.add(Pair(message, isMyMessage) as Pair<String, Boolean>)
                 }
 
-                viewManager = LinearLayoutManager(this)
+                viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
                 viewAdapter = MyAdapter(allMessages)
                 recyclerView = binding.messageInbox.apply {
                     setHasFixedSize(true)
@@ -367,7 +394,9 @@ class MainActivity2 : AppCompatActivity() {
                 for (doc in value!!) {
                     val message = doc.getString("message")
                     val sender = doc.getString("sender")
-                    allMessages.add(listOf(message, sender))
+                    val isMyMessage = (sender == myFirebaseID)
+                    allMessages.add(Pair(message, isMyMessage) as Pair<String, Boolean>)
+                    //allMessages.add(listOf(message, sender))
                 }
 
                 // RecyclerViewの更新
