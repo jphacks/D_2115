@@ -19,6 +19,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class savePicture : AppCompatActivity() {
+    // 戻るボタン無効化
+    override fun onBackPressed() {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_save_picture)

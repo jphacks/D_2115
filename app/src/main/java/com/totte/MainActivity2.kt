@@ -77,6 +77,9 @@ class MainActivity2 : AppCompatActivity() {
 
     private var allMessages = ArrayList<List<String?>>()
 
+    // 戻るボタン無効化
+    override fun onBackPressed() {}
+
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
                 // val cameraImage : ImageView = findViewById(R.id.cameraImage)
