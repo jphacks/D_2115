@@ -77,6 +77,9 @@ class MainActivity2 : AppCompatActivity() {
 
     private var allMessages = ArrayList<List<String?>>()
 
+    // 戻るボタン無効化
+    override fun onBackPressed() {}
+
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
                 // val cameraImage : ImageView = findViewById(R.id.cameraImage)
@@ -148,7 +151,6 @@ class MainActivity2 : AppCompatActivity() {
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         connectionsClient = Nearby.getConnectionsClient(this)
-        myName = intent.getStringExtra("NAME").toString()
         myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         val searchingMessage : TextView = findViewById(R.id.searchingMessage)
