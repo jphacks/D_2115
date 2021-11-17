@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class savePicture : AppCompatActivity() {
+
     // 戻るボタン無効化
     override fun onBackPressed() {}
 

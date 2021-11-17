@@ -34,12 +34,9 @@ class MainActivity : AppCompatActivity() {
         signInAnonymously()
 
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
-        val name : EditText = findViewById(R.id.name)
-
         btnSearchBegin.setOnClickListener {
 
             val intent = Intent(this, MainActivity2::class.java)
-            intent.putExtra("NAME",name.text.toString())
             startActivity(intent)
         }
     }
