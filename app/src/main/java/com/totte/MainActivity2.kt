@@ -34,6 +34,8 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 import android.app.Application
+import java.nio.file.Files
+import java.nio.file.Paths
 import android.view.View
 
 class MyApp :Application(){
@@ -267,6 +269,7 @@ class MainActivity2 : AppCompatActivity() {
         startActivityForResult(intent, requestCode)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         println("Called: fun onActivityResult")
         println(requestCode)
@@ -295,29 +298,10 @@ class MainActivity2 : AppCompatActivity() {
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val sendImageStream = FileInputStream(File(sendImagePath))
             connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
-        }
-    }
-
-    private fun saveToPublish(photoBitmap: Bitmap, name: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveToPublishWithContentResolver(photoBitmap, name)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun saveToPublishWithContentResolver(photoBitmap: Bitmap, name: String) {
-        val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, name)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
-        }
-
-        val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val contentResolver = contentResolver
-        val item = contentResolver.insert(collection, values)!!
-
-        contentResolver.openFileDescriptor(item, "w", null).use {
-            FileOutputStream(it!!.fileDescriptor).use { out ->
-                photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            try {
+                Files.deleteIfExists(Paths.get(sendImagePath))
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }
