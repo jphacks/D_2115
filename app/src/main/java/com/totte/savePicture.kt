@@ -28,6 +28,7 @@ class savePicture : AppCompatActivity() {
         val myApp = MyApp.getInstance()
         val imageInputStream = myApp.imageInputStream
         val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
+        val btnDisposePicture : Button = findViewById(R.id.btnDisposePicture)
 
         val bitmap = BitmapFactory.decodeStream(imageInputStream)
         cameraImage.setImageBitmap(bitmap)
@@ -38,7 +39,12 @@ class savePicture : AppCompatActivity() {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
             val fileName = "totte$timeStamp.jpeg"
             saveToPublish(targetBitmap, fileName)
-            Snackbar.make(findViewById(R.id.layoutSave), "保存完了", Snackbar.LENGTH_SHORT).show()
+            // Snackbar.make(findViewById(R.id.layoutSave), "保存完了", Snackbar.LENGTH_SHORT).show()
+
+            finish()
+        }
+
+        btnDisposePicture.setOnClickListener {
             finish()
         }
     }
