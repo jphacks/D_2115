@@ -59,4 +59,5 @@
         app:layout_constraintStart_toEndOf="@+id/searchingText"
         app:layout_constraintTop_toBottomOf="@+id/name" />
 
+
 </androidx.constraintlayout.widget.ConstraintLayout>

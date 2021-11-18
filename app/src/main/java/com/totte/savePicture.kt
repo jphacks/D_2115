@@ -19,6 +19,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class savePicture : AppCompatActivity() {
+
+    // 戻るボタン無効化
+    override fun onBackPressed() {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_save_picture)
@@ -28,6 +32,7 @@ class savePicture : AppCompatActivity() {
         val myApp = MyApp.getInstance()
         val imageInputStream = myApp.imageInputStream
         val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
+        val btnDisposePicture : Button = findViewById(R.id.btnDisposePicture)
 
         val bitmap = BitmapFactory.decodeStream(imageInputStream)
         cameraImage.setImageBitmap(bitmap)
@@ -38,7 +43,12 @@ class savePicture : AppCompatActivity() {
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
             val fileName = "totte$timeStamp.jpeg"
             saveToPublish(targetBitmap, fileName)
-            Snackbar.make(findViewById(R.id.layoutSave), "保存完了", Snackbar.LENGTH_SHORT).show()
+            // Snackbar.make(findViewById(R.id.layoutSave), "保存完了", Snackbar.LENGTH_SHORT).show()
+
+            finish()
+        }
+
+        btnDisposePicture.setOnClickListener {
             finish()
         }
     }

@@ -69,9 +69,31 @@
         android:layout_height="561dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.558" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.423"
+        app:layout_constraintStart_toEndOf="@+id/searchingMessage"
+        app:layout_constraintTop_toTopOf="@+id/messageInbox" />
+
+    <TextView
+        android:id="@+id/searchingMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Searching . . ."
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
+        app:layout_constraintEnd_toEndOf="@+id/messageInbox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/messageInbox" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
