@@ -51,8 +51,7 @@ class EditProfile : AppCompatActivity() {
             .collection("inbox")
             .add(mail)
             .addOnSuccessListener {
-                Toast.makeText(applicationContext, "送信完了！", Toast.LENGTH_LONG).show()
-                messageEdit.text.clear()
+                Toast.makeText(applicationContext, "保存完了！", Toast.LENGTH_LONG).show()
             }
             .addOnFailureListener { e ->
                 Log.w("Firestore", "Error writing document", e)
