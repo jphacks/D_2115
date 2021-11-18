@@ -222,7 +222,14 @@ class MainActivity2 : AppCompatActivity() {
                     return
                 }
             }
-            this.recreate()
+            val intent = intent
+            connectionsClient.apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
+            finish()
+            startActivity(intent)
         }
 
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
