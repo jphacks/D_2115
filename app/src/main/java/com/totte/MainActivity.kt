@@ -35,11 +35,6 @@ class MainActivity : AppCompatActivity() {
 
         val btnSearchBegin : Button = findViewById(R.id.btnSearchBegin)
         val btnProfile : Button = findViewById(R.id.btnProfile)
-        val searchingText : TextView = findViewById(R.id.searchingText)
-        val progressBar : ProgressBar = findViewById(R.id.progressBar)
-
-        searchingText.visibility = View.GONE
-        progressBar.visibility = View.GONE
         //shortAnimationDuration = resources.getInteger(android.R.integer.config_shortAnimTime)
 
         btnSearchBegin.setOnClickListener {

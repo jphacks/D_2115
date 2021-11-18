@@ -28,6 +28,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".EditProfile"
+            android:exported="false" />
+        <activity
             android:name=".savePicture"
             android:exported="false" />
         <activity
