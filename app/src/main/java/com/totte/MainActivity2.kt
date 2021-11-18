@@ -222,7 +222,7 @@ class MainActivity2 : AppCompatActivity() {
                     return
                 }
             }
-            recreate()
+            this.recreate()
         }
 
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
@@ -267,13 +267,6 @@ class MainActivity2 : AppCompatActivity() {
         sendImagePath = file.absolutePath
 
         return FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
-    }
-
-    private fun goShooting() {
-        println("Called: fun goShooting()")
-        val intent = Intent(this, Shooting::class.java)
-        val requestCode = 1001
-        startActivityForResult(intent, requestCode)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
