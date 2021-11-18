@@ -312,6 +312,7 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     fun sendMessage(destEmailAddr: String, message: String) {
+        Log.d("Firestore", "send message : $message")
         val db = FirebaseFirestore.getInstance()
         val messageEdit : EditText = findViewById(R.id.messageEdit)
 
@@ -337,13 +338,14 @@ class MainActivity2 : AppCompatActivity() {
                 Log.w("Firestore", "Error writing document", e)
             }
     }
+
     private fun defineDB(){
         val ids = listOf(myFirebaseID, opponentFirebaseID!!)
         val ordered_ids = ids.sorted()
         val send : Button = findViewById(R.id.send)
         val messageEdit : EditText = findViewById(R.id.messageEdit)
-        //val allMessages = ArrayList<List<String?>>()
         val allMessages = ArrayList<Pair<String, Boolean>>()
+        var greeting :String? = "こんにちは！"
 
         //val searchingMessage : TextView = findViewById(R.id.searchingMessage)
         //val progressBar : ProgressBar = findViewById(R.id.progressBar)
@@ -352,8 +354,27 @@ class MainActivity2 : AppCompatActivity() {
 
         viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
         viewAdapter = MyAdapter(allMessages)
-
         dbName = ordered_ids[0] + ordered_ids[1]
+
+        db = FirebaseFirestore.getInstance()
+        db.collection("greeting")
+            .document(myFirebaseID)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .limit(2)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    greeting = document.getString("message")
+                    break
+                }
+                sendMessage(dbName, greeting.toString())
+                Log.d("Firestore", "Success reading document")
+            }
+            .addOnFailureListener { e ->
+                Log.d("Firestore", "Error reading document", e)
+            }
+
         Log.d("TAG", "DBNAME: $dbName")
         db = FirebaseFirestore.getInstance()
         db.collection("messages")
@@ -402,7 +423,6 @@ class MainActivity2 : AppCompatActivity() {
                 // RecyclerViewの更新
                 viewAdapter.notifyDataSetChanged()
             }
-
 
         //送信ボタン押下時の設定
         send.setOnClickListener {
