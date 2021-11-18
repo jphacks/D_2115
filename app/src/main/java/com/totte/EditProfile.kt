@@ -17,18 +17,37 @@ import java.util.*
 class EditProfile : AppCompatActivity() {
     private lateinit var myFirebaseID :String
     private lateinit var dbName :String
+    private lateinit var db :FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
         val btnSaveProfile : Button = findViewById(R.id.saveProfile)
         val greeting : EditText = findViewById(R.id.greeting)
+        var template_greeting :String? = ""
+
         myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
         dbName = myFirebaseID
 
         btnSaveProfile.setOnClickListener{
             saveProfile(dbName, greeting.text.toString())
         }
+
+        db = FirebaseFirestore.getInstance()
+        db.collection("greeting")
+            .document(myFirebaseID)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .limit(2)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    template_greeting = document.getString("message")
+                    break
+                }
+                if (template_greeting != "")
+                    greeting.setHint(template_greeting)
+            }
 
     }
 
