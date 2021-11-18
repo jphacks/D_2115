@@ -121,6 +121,7 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     private fun startAdvertising() {
+        Log.d("connection", "called fun startAdvertising()")
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startAdvertising(
             myFirebaseID,//myName,
@@ -222,16 +223,24 @@ class MainActivity2 : AppCompatActivity() {
                     return
                 }
             }
-            recreate()
+            val intent = intent
+            connectionsClient.apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
+            finish()
+            startActivity(intent)
         }
 
-        if (requestCode == MainActivity2.CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 shootPicture()
             }
         }
     }
     private fun startDiscovery(){
+        Log.d("connection", "called fun startDiscovery()")
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startDiscovery(packageName,endpointDiscoveryCallback,options)
     }
@@ -239,7 +248,7 @@ class MainActivity2 : AppCompatActivity() {
     private fun checkCameraPermission() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.CAMERA)
 
     private fun grantCameraPermission() = ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
-        Shooting.CAMERA_PERMISSION_REQUEST_CODE
+        CAMERA_PERMISSION_REQUEST_CODE
     )
 
     private fun shootPicture() {
@@ -266,13 +275,6 @@ class MainActivity2 : AppCompatActivity() {
         sendImagePath = file.absolutePath
 
         return FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
-    }
-
-    private fun goShooting() {
-        println("Called: fun goShooting()")
-        val intent = Intent(this, Shooting::class.java)
-        val requestCode = 1001
-        startActivityForResult(intent, requestCode)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
