@@ -121,6 +121,7 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     private fun startAdvertising() {
+        Log.d("connection", "called fun startAdvertising()")
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startAdvertising(
             myFirebaseID,//myName,
@@ -224,13 +225,14 @@ class MainActivity2 : AppCompatActivity() {
             recreate()
         }
 
-        if (requestCode == MainActivity2.CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 shootPicture()
             }
         }
     }
     private fun startDiscovery(){
+        Log.d("connection", "called fun startDiscovery()")
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startDiscovery(packageName,endpointDiscoveryCallback,options)
     }
@@ -238,7 +240,7 @@ class MainActivity2 : AppCompatActivity() {
     private fun checkCameraPermission() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.CAMERA)
 
     private fun grantCameraPermission() = ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
-        Shooting.CAMERA_PERMISSION_REQUEST_CODE
+        CAMERA_PERMISSION_REQUEST_CODE
     )
 
     private fun shootPicture() {
