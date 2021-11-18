@@ -77,6 +77,9 @@ class MainActivity2 : AppCompatActivity() {
 
     private var allMessages = ArrayList<List<String?>>()
 
+    private lateinit var searchingMessage :TextView
+    private lateinit var progressBar :ProgressBar
+
     // 戻るボタン無効化
     override fun onBackPressed() {}
 
@@ -153,8 +156,8 @@ class MainActivity2 : AppCompatActivity() {
         connectionsClient = Nearby.getConnectionsClient(this)
         myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
-        val searchingMessage : TextView = findViewById(R.id.searchingMessage)
-        val progressBar : ProgressBar = findViewById(R.id.progressBar)
+        searchingMessage = findViewById(R.id.searchingMessage)
+        progressBar = findViewById(R.id.progressBar)
         searchingMessage.visibility = View.VISIBLE
         progressBar.visibility = View.VISIBLE
 
@@ -342,8 +345,8 @@ class MainActivity2 : AppCompatActivity() {
         //val allMessages = ArrayList<List<String?>>()
         val allMessages = ArrayList<Pair<String, Boolean>>()
 
-        val searchingMessage : TextView = findViewById(R.id.searchingMessage)
-        val progressBar : ProgressBar = findViewById(R.id.progressBar)
+        //val searchingMessage : TextView = findViewById(R.id.searchingMessage)
+        //val progressBar : ProgressBar = findViewById(R.id.progressBar)
         searchingMessage.visibility = View.GONE
         progressBar.visibility = View.GONE
 
