@@ -142,9 +142,10 @@ class MainActivity2 : AppCompatActivity() {
     }
 
     private fun previewImage(image : InputStream) {
+        val intent = Intent(this, savePicture::class.java)
+        intent.putExtra("DBNAME", dbName.toString())
         val myApp = MyApp.getInstance()
         myApp.imageInputStream = image
-        val intent = Intent(this, savePicture::class.java)
         startActivity(intent)
     }
 
@@ -331,7 +332,6 @@ class MainActivity2 : AppCompatActivity() {
             .collection("inbox")
             .add(mail)
             .addOnSuccessListener {
-                Toast.makeText(applicationContext, "送信完了！", Toast.LENGTH_LONG).show()
                 messageEdit.text.clear()
             }
             .addOnFailureListener { e ->
