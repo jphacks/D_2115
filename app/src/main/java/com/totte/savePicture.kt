@@ -83,7 +83,7 @@ class savePicture : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveToPublishWithContentResolver(photoBitmap, name)
         } else {
-            saveToPublishWithMediaStore(photoBitmap, name
+            saveToPublishWithMediaStore(photoBitmap, name)
         }
     }
 
