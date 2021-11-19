@@ -2,21 +2,37 @@ package com.totte
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.savedstate.SavedStateRegistryOwner
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Shooting : AppCompatActivity() {
     companion object {
         const val CAMERA_REQUEST_CODE = 1
         const val CAMERA_PERMISSION_REQUEST_CODE = 2
     }
+
+    private lateinit var path: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,9 +67,28 @@ class Shooting : AppCompatActivity() {
         }
     }
 
+    private fun createSaveFileUri(): Uri {
+        println("Called: createSaveFileUri()")
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
+        val imageFileName = "tmp_$timeStamp"
+
+        val file = File(
+            filesDir,
+            "$imageFileName.jpg"
+        )
+
+        file.createNewFile()
+
+        path = file.absolutePath
+        println(path)
+
+        return FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
+    }
+
     private fun shootPicture() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
             addCategory(Intent.CATEGORY_DEFAULT)
+            putExtra(MediaStore.EXTRA_OUTPUT, createSaveFileUri())
         }
 
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
@@ -63,6 +98,7 @@ class Shooting : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            /*
             data?.extras?.get("data").let { it ->
                 val baos: ByteArrayOutputStream = ByteArrayOutputStream()
                 (it as Bitmap).compress(Bitmap.CompressFormat.JPEG, 100, baos)
@@ -70,10 +106,14 @@ class Shooting : AppCompatActivity() {
 
                 intent.putExtra("KEY", jpgarr)
                 setResult(Activity.RESULT_OK, intent)
-            }
-        }
+                }
+             */
+                 // 保存先を渡す
 
+
+            println(path)
+            intent.putExtra("KEY", path)
+        }
         finish()
     }
-
 }

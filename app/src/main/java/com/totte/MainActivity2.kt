@@ -2,34 +2,64 @@ package com.totte
 
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Toast
+import android.util.Log
+import android.widget.*
 import androidx.annotation.CallSuper
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.totte.databinding.ActivityMain2Binding
-import java.io.ByteArrayInputStream
-import java.io.FileOutputStream
-import java.io.InputStream
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import android.app.Application
+import java.nio.file.Files
+import java.nio.file.Paths
+import android.view.View
+
+class MyApp :Application(){
+    var imageInputStream: InputStream? = null
+
+    companion object {
+        private var instance : MyApp? = null
+        fun  getInstance(): MyApp {
+            if (instance == null)
+                instance = MyApp()
+            return instance!!
+        }
+    }
+}
 
 class MainActivity2 : AppCompatActivity() {
 
-    private val STRATEGY = Strategy.P2P_STAR
+    companion object {
+        const val CAMERA_REQUEST_CODE = 10
+        const val CAMERA_PERMISSION_REQUEST_CODE = 20
+    }
+
+    private lateinit var sendImagePath: String
+    private val STRATEGY = Strategy.P2P_POINT_TO_POINT
     private lateinit var connectionsClient: ConnectionsClient
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
     private var opponentName: String? = null
@@ -37,13 +67,30 @@ class MainActivity2 : AppCompatActivity() {
     private lateinit var myName: String
     private lateinit var binding: ActivityMain2Binding
 
+    private lateinit var myFirebaseID: String
+    private var opponentFirebaseID: String? = null
+    private lateinit var dbName: String
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var db: FirebaseFirestore
+
+    private var allMessages = ArrayList<List<String?>>()
+
+    private lateinit var searchingMessage :TextView
+    private lateinit var progressBar :ProgressBar
+
+    // 戻るボタン無効化
+    override fun onBackPressed() {}
+
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                // val cameraImage : ImageView = findViewById(R.id.cameraImage)
                 val payloadStream: Payload.Stream = payload.asStream()!!
                 val payloadInputStream = payloadStream.asInputStream()
-                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
-                cameraImage.setImageBitmap(bitmap)
+                previewImage(payloadInputStream)
+                // val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                // cameraImage.setImageBitmap(bitmap)
             }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
@@ -55,7 +102,9 @@ class MainActivity2 : AppCompatActivity() {
             // Accepting a connection means you want to receive messages. Hence, the API expects
             // that you attach a PayloadCall to the acceptance
             connectionsClient.acceptConnection(endpointId, payloadCallback)
-            opponentName = "お相手の特徴：${info.endpointName}"
+            opponentName = "お相手のID：${info.endpointName}"
+            opponentFirebaseID = info.endpointName
+            defineDB()
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -63,7 +112,6 @@ class MainActivity2 : AppCompatActivity() {
                 connectionsClient.stopAdvertising()
                 connectionsClient.stopDiscovery()
                 opponentEndpointId = endpointId
-                binding.opponentName.text = opponentName
                 Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
             }
         }
@@ -71,10 +119,12 @@ class MainActivity2 : AppCompatActivity() {
         override fun onDisconnected(endpointId: String) {
         }
     }
+
     private fun startAdvertising() {
+        Log.d("connection", "called fun startAdvertising()")
         val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startAdvertising(
-            myName,
+            myFirebaseID,//myName,
             packageName,
             connectionLifecycleCallback,
             options
@@ -83,7 +133,7 @@ class MainActivity2 : AppCompatActivity() {
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            connectionsClient.requestConnection(myName, endpointId, connectionLifecycleCallback)
+            connectionsClient.requestConnection(myFirebaseID, endpointId, connectionLifecycleCallback)
             // println("Found!!")
             Snackbar.make(findViewById(R.id.layoutMain2), "見つかりました！！！", Snackbar.LENGTH_SHORT).show()
         }
@@ -92,27 +142,46 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
+    private fun previewImage(image : InputStream) {
+        val intent = Intent(this, savePicture::class.java)
+        intent.putExtra("DBNAME", dbName.toString())
+        val myApp = MyApp.getInstance()
+        myApp.imageInputStream = image
+        startActivity(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
         binding = ActivityMain2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         connectionsClient = Nearby.getConnectionsClient(this)
-        myName = intent.getStringExtra("NAME").toString()
+        myFirebaseID = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+        searchingMessage = findViewById(R.id.searchingMessage)
+        progressBar = findViewById(R.id.progressBar)
+        searchingMessage.visibility = View.VISIBLE
+        progressBar.visibility = View.VISIBLE
+
         startAdvertising()
         startDiscovery()
 
         val btnShooting : Button = findViewById(R.id.btnShooting)
         val btnClose : Button = findViewById(R.id.btnClose)
-        val btnSavePicture : Button = findViewById(R.id.btnSavePicture)
+
+        // val myId : TextView = findViewById(R.id.myId)
+        // val destEmailAddrEdit : EditText = findViewById(R.id.destEmailAddrEdit)
 
         btnShooting.setOnClickListener {
             if (opponentEndpointId != null) {
-                goShooting()
+                if (checkCameraPermission()) {
+                    shootPicture()
+                } else {
+                    grantCameraPermission()
+                }
             } else {
                 Snackbar.make(findViewById(R.id.layoutMain2), "まだ相手がいないよ…", Snackbar.LENGTH_SHORT).show()
             }
-
         }
 
         btnClose.setOnClickListener {
@@ -122,15 +191,6 @@ class MainActivity2 : AppCompatActivity() {
                 stopAllEndpoints()
             }
             finish()
-        }
-
-        btnSavePicture.setOnClickListener {
-            val targetImage : ImageView = findViewById(R.id.cameraImage)
-            val targetBitmap : Bitmap = (targetImage.drawable as BitmapDrawable).bitmap
-            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
-            val fileName = "totte$timeStamp.jpeg"
-            saveToPublish(targetBitmap, fileName)
-            Snackbar.make(findViewById(R.id.layoutMain2), "保存完了", Snackbar.LENGTH_SHORT).show()
         }
 
     }
@@ -163,53 +223,212 @@ class MainActivity2 : AppCompatActivity() {
                     return
                 }
             }
-            recreate()
+            val intent = intent
+            connectionsClient.apply {
+                stopAdvertising()
+                stopDiscovery()
+                stopAllEndpoints()
+            }
+            finish()
+            startActivity(intent)
+        }
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                shootPicture()
+            }
         }
     }
     private fun startDiscovery(){
+        Log.d("connection", "called fun startDiscovery()")
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
         connectionsClient.startDiscovery(packageName,endpointDiscoveryCallback,options)
     }
 
-    private fun goShooting() {
-        val intent = Intent(this, Shooting::class.java)
-        val requestCode = 1001
-        startActivityForResult(intent, requestCode)
+    private fun checkCameraPermission() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.CAMERA)
+
+    private fun grantCameraPermission() = ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),
+        CAMERA_PERMISSION_REQUEST_CODE
+    )
+
+    private fun shootPicture() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+            addCategory(Intent.CATEGORY_DEFAULT)
+            putExtra(MediaStore.EXTRA_OUTPUT, createSaveFileUri())
+        }
+
+        startActivityForResult(intent, CAMERA_REQUEST_CODE)
     }
 
+    private fun createSaveFileUri(): Uri {
+        println("Called: createSaveFileUri()")
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.JAPAN).format(Date())
+        val imageFileName = "tmp_$timeStamp"
+
+        val file = File(
+            filesDir,
+            "$imageFileName.jpg"
+        )
+
+        file.createNewFile()
+
+        sendImagePath = file.absolutePath
+
+        return FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        println("Called: fun onActivityResult")
+        println(requestCode)
+        println(resultCode)
         super.onActivityResult(requestCode, resultCode, intent)
+
+        /*
         if (requestCode == 1001) {
             if (resultCode == RESULT_OK) {
-                val sendImageByte = intent!!.getByteArrayExtra("KEY")
-                val sendImageStream = ByteArrayInputStream(sendImageByte)
+                val sendImagePath = intent?.getStringExtra("KEY",)
+                println(sendImagePath)
+                val sendImageStream = FileInputStream(File(sendImagePath))
                 // println(sendImage?.size)
-                connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
+                // connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
+
+                // debugのため手元で表示する
+                val cameraImage : ImageView = findViewById(R.id.cameraImage)
+                val payloadStream: Payload.Stream = Payload.fromStream(sendImageStream).asStream()!!
+                val payloadInputStream = payloadStream.asInputStream()
+                val bitmap = BitmapFactory.decodeStream(payloadInputStream)
+                cameraImage.setImageBitmap(bitmap)
+            }
+        }
+        */
+
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val sendImageStream = FileInputStream(File(sendImagePath))
+            connectionsClient.sendPayload(opponentEndpointId!!, Payload.fromStream(sendImageStream))
+            try {
+                Files.deleteIfExists(Paths.get(sendImagePath))
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }
 
-    private fun saveToPublish(photoBitmap: Bitmap, name: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveToPublishWithContentResolver(photoBitmap, name)
-        }
+    fun sendMessage(destEmailAddr: String, message: String) {
+        Log.d("Firestore", "send message : $message")
+        val db = FirebaseFirestore.getInstance()
+        val messageEdit : EditText = findViewById(R.id.messageEdit)
+
+        // 現在時刻の取得
+        val date = Date()
+        val format = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+
+        val mail = hashMapOf(
+            "datetime" to format.format(date),
+            "sender" to myFirebaseID,
+            "message" to message
+        )
+
+        db.collection("messages")
+            .document(destEmailAddr)
+            .collection("inbox")
+            .add(mail)
+            .addOnSuccessListener {
+                messageEdit.text.clear()
+            }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Error writing document", e)
+            }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun saveToPublishWithContentResolver(photoBitmap: Bitmap, name: String) {
-        val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, name)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
-        }
+    private fun defineDB(){
+        val ids = listOf(myFirebaseID, opponentFirebaseID!!)
+        val ordered_ids = ids.sorted()
+        val send : Button = findViewById(R.id.send)
+        val messageEdit : EditText = findViewById(R.id.messageEdit)
+        val allMessages = ArrayList<Pair<String, Boolean>>()
+        var greeting :String? = "こんにちは！"
 
-        val collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-        val contentResolver = contentResolver
-        val item = contentResolver.insert(collection, values)!!
+        //val searchingMessage : TextView = findViewById(R.id.searchingMessage)
+        //val progressBar : ProgressBar = findViewById(R.id.progressBar)
+        searchingMessage.visibility = View.GONE
+        progressBar.visibility = View.GONE
 
-        contentResolver.openFileDescriptor(item, "w", null).use {
-            FileOutputStream(it!!.fileDescriptor).use { out ->
-                photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
+        viewAdapter = MyAdapter(allMessages)
+        dbName = ordered_ids[0] + ordered_ids[1]
+
+        db = FirebaseFirestore.getInstance()
+        db.collection("greeting")
+            .document(myFirebaseID)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .limit(2)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    greeting = document.getString("message")
+                    break
+                }
+                sendMessage(dbName, greeting.toString())
+                Log.d("Firestore", "Success reading document")
             }
+            .addOnFailureListener { e ->
+                Log.d("Firestore", "Error reading document", e)
+            }
+
+        Log.d("TAG", "DBNAME: $dbName")
+        db = FirebaseFirestore.getInstance()
+        db.collection("messages")
+            .document(dbName)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val message = document.getString("message")
+                    val sender = document.getString("sender")
+                    val isMyMessage = (sender == myFirebaseID)
+                    allMessages.add(Pair(message, isMyMessage) as Pair<String, Boolean>)
+                }
+
+                viewManager = LinearLayoutManager(this@MainActivity2, LinearLayoutManager.VERTICAL, true)
+                viewAdapter = MyAdapter(allMessages)
+                recyclerView = binding.messageInbox.apply {
+                    setHasFixedSize(true)
+                    layoutManager = viewManager
+                    adapter = viewAdapter
+                }
+            }
+
+        //　Firestore更新時の操作の登録
+        db.collection("messages")
+            .document(dbName)
+            .collection("inbox")
+            .orderBy("datetime", Query.Direction.DESCENDING)
+            // Firestoreの更新時の操作を登録
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    Log.w("Firestore", "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+
+                allMessages.clear()
+                for (doc in value!!) {
+                    val message = doc.getString("message")
+                    val sender = doc.getString("sender")
+                    val isMyMessage = (sender == myFirebaseID)
+                    allMessages.add(Pair(message, isMyMessage) as Pair<String, Boolean>)
+                    //allMessages.add(listOf(message, sender))
+                }
+
+                // RecyclerViewの更新
+                viewAdapter.notifyDataSetChanged()
+            }
+
+        //送信ボタン押下時の設定
+        send.setOnClickListener {
+            sendMessage(dbName, messageEdit.text.toString())
         }
     }
 }
