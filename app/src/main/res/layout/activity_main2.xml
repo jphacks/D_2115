@@ -78,27 +78,42 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.558" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.423"
-        app:layout_constraintStart_toEndOf="@+id/searchingMessage"
-        app:layout_constraintTop_toTopOf="@+id/messageInbox" />
-
-    <TextView
-        android:id="@+id/searchingMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Searching . . ."
-        android:textSize="24sp"
-        android:textColor="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
-        app:layout_constraintEnd_toEndOf="@+id/messageInbox"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/messageInbox" />
+        app:layout_constraintTop_toTopOf="@+id/messageInbox">
+
+        <TextView
+            android:id="@+id/searchingMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Searching...  "
+            android:textSize="24sp"
+            android:layout_weight="1"
+            android:textColor="@android:color/black"
+            android:layout_gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
+            app:layout_constraintEnd_toEndOf="@+id/messageInbox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/messageInbox" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.423"
+            app:layout_constraintStart_toEndOf="@+id/searchingMessage"
+            app:layout_constraintTop_toTopOf="@+id/messageInbox" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
