@@ -75,10 +75,8 @@
 
 - Nearby Connections API
     - 30m以内で自動で接続してくれます
-    - チャットはfirebaseを通して行われます
-
-![yellow](https://user-images.githubusercontent.com/81406322/142597832-b78f5eab-ae12-4227-9a6f-f66879b1fddf.png)
-
+    - チャットはFirebaseを通して行われます
+![yellow (1)](https://user-images.githubusercontent.com/81406224/142598453-ea5949b5-7443-4256-b489-5528e04f33e6.png)
 
 #### デバイス
 
