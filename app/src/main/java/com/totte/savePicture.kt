@@ -1,21 +1,29 @@
 package com.totte
 
+import android.Manifest
 import android.content.ContentValues
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.media.MediaScannerConnection
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.Serializable
@@ -26,6 +34,8 @@ class savePicture : AppCompatActivity() {
 
     private lateinit var dbName :String
     private lateinit var myFirebaseID :String
+
+    private val REQUEST_EXTERNAL_STORAGE_CODE = 5
 
     // 戻るボタン無効化
     override fun onBackPressed() {}
@@ -45,6 +55,12 @@ class savePicture : AppCompatActivity() {
 
         val bitmap = BitmapFactory.decodeStream(imageInputStream)
         cameraImage.setImageBitmap(bitmap)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            if (!checkStoragePermission()) {
+                grantStoragePermission()
+            }
+        }
 
         btnSavePicture.setOnClickListener {
             val targetImage : ImageView = findViewById(R.id.cameraImage)
@@ -66,6 +82,8 @@ class savePicture : AppCompatActivity() {
     private fun saveToPublish(photoBitmap: Bitmap, name: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             saveToPublishWithContentResolver(photoBitmap, name)
+        } else {
+            saveToPublishWithMediaStore(photoBitmap, name
         }
     }
 
@@ -86,6 +104,32 @@ class savePicture : AppCompatActivity() {
             }
         }
     }
+
+    private fun saveToPublishWithMediaStore(photoBitmap: Bitmap, name: String) {
+        val file = File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+            name
+        )
+
+        FileOutputStream(file).use { out ->
+            photoBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+        }
+
+        MediaScannerConnection.scanFile(
+            this,
+            arrayOf(file.path),
+            arrayOf("image/jpg"),
+            null
+        )
+    }
+
+    private fun checkStoragePermission() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+    private fun grantStoragePermission() = ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+        REQUEST_EXTERNAL_STORAGE_CODE
+    )
+
+
 
     fun sendMessage(destEmailAddr: String, message: String) {
         Log.d("Firestore", "send message : $message")
