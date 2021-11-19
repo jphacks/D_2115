@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FB00DA"
+    android:background="#FFFFFF"
     tools:context=".savePicture"
     android:id="@+id/layoutSave">
 
@@ -24,30 +24,35 @@
         android:layout_width="111dp"
         android:layout_height="94dp"
         android:text="破棄"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.283"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cameraImage"
-        app:layout_constraintVertical_bias="0.525" />
+        app:layout_constraintVertical_bias="0.525"
+        android:backgroundTint="#999999"/>
 
     <Button
         android:id="@+id/btnSavePicture"
         android:layout_width="111dp"
         android:layout_height="94dp"
         android:text="保存"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.716"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cameraImage"
-        app:layout_constraintVertical_bias="0.525" />
+        app:layout_constraintVertical_bias="0.525"
+        android:backgroundTint="#FF1493"/>
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="写真が届きました！！！"
+        android:textColor="@android:color/black"
         android:textSize="34sp"
         app:layout_constraintBottom_toTopOf="@+id/cameraImage"
         app:layout_constraintEnd_toEndOf="parent"

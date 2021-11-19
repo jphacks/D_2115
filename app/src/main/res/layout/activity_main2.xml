@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity2"
-    android:id="@+id/layoutMain2">
+    android:id="@+id/layoutMain2"
+    android:background="#FFFFFF">
 
     <Button
         android:id="@+id/btnShooting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:drawableRight="@drawable/camera_pk"
+        android:drawableRight="@drawable/camera"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.727"
@@ -44,6 +45,7 @@
         android:ems="10"
         android:gravity="start|top"
         android:hint="送信メッセージ"
+        android:textColorHint="@android:color/darker_gray"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,10 +59,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginBottom="8dp"
         android:text="▶"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.166"
-        app:layout_constraintStart_toEndOf="@+id/messageEdit" />
+        app:layout_constraintStart_toEndOf="@+id/messageEdit"
+        android:backgroundTint="#FF1493"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -90,6 +94,7 @@
             android:text="Searching...  "
             android:textSize="24sp"
             android:layout_weight="1"
+            android:textColor="@android:color/black"
             android:layout_gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="@+id/messageInbox"
             app:layout_constraintEnd_toEndOf="@+id/messageInbox"
